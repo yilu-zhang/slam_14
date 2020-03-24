@@ -56,6 +56,7 @@ int main( int argc, char** argv )
     typedef pcl::PointCloud<PointT> PointCloud;
     
     // 新建一个点云
+    double max_z=0,min_z=0;
     PointCloud::Ptr pointCloud( new PointCloud ); 
     for ( int i=0; i<5; i++ )
     {
@@ -75,7 +76,16 @@ int main( int argc, char** argv )
                 point[0] = (u-cx)*point[2]/fx;
                 point[1] = (v-cy)*point[2]/fy; 
                 Eigen::Vector3d pointWorld = T*point;
-                
+
+		//zhang
+		if(pointWorld[1]>max_z)
+			max_z = pointWorld[1];                
+		if(pointWorld[1]<min_z)
+			min_z = pointWorld[1];                
+		if(pointWorld[1]>-1||pointWorld[1]<-3)
+			continue;
+		pointWorld[1] = 0;
+
                 PointT p ;
                 p.x = pointWorld[0];
                 p.y = pointWorld[1];
@@ -95,6 +105,8 @@ int main( int argc, char** argv )
         (*pointCloud) += *tmp;
     }
     
+    cout<<"the max_z is:"<<max_z<<endl;
+    cout<<"the min_z is:"<<min_z<<endl;
     pointCloud->is_dense = false;
     cout<<"点云共有"<<pointCloud->size()<<"个点."<<endl;
     
